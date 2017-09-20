@@ -1,0 +1,59 @@
+<html><head><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous"><script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script><!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>--><script src="http://ajax.cdnjs.com/ajax/libs/mustache.js/0.3.0/mustache.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script><script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script><link href="https://fonts.googleapis.com/css?family=Lora:400,400italic|Work+Sans:300,400,500,600" rel="stylesheet" type="text/css"><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"><link href="styles/tagboard.css" rel="stylesheet" type="text/css"><script language="javascript" type="text/javascript">$(document).ready(function () {
+            // example user list returned from an ajax call...
+
+            $.ajax({
+                url: 'https://api.tagboard.com/v0.2/featured/356918',
+                headers: {
+                    "tgb-user-key": "JDJhJDEwJFRodDB6TzRuL2hnNHdKSVpNc1FnMy50UGdXdU5zZzJLcUZsOVpydEd2MXlHSDAzT3JGT1BX",
+                    "tgb-api-key": "JDJhJDEwJGQybHlTMEE2Rkl3NS5HVlpoalRHV3VBWmlzcVRoRlo1c04uUVAzOHF3RHJmYXR4djM2eUtl"
+                },
+                method: 'GET'
+            }).then(function (data, status, xhr) {
+                var posts = data.posts;
+                var articleArray = [];
+                console.log(posts);
+                posts.forEach(function (arrayItem) {
+                    var articleItem = {};
+                    if (arrayItem.network === 'facebook') {
+                        console.log(arrayItem);
+                        articleItem = {
+                            postImage: arrayItem.photos[0].l,
+                            profileImg: arrayItem.user_profile_image_url,
+                            name: arrayItem.user_real_name,
+                            htmlText: arrayItem.html,
+                            postUrl: arrayItem
+                        }
+                        articleArray.push(articleItem);
+                    }
+                });
+
+                console.log(articleArray);
+                var dataArticle = {
+                    articles: articleArray
+                };
+
+
+                var articleTemplate = $('#cardsTemplate').html();
+                var html = Mustache.to_html(articleTemplate, dataArticle);
+                $('#articleWrapper').html(html);
+            });
+        });</script><script id="cardsTemplate" type="text/template"><div class="card-deck">
+            {{#articles}}
+            <div class="card tag-cards">
+                <img class="card-img-top img-fluid" src="{{postImage}}">
+                <div class="card-author">
+                    <img class="profile-img" src="{{profileImg}}" alt="">
+                    <span class="name">{{name}}</span>
+                    <img class="network-img" src="https://static.tagboard.com/public/img/logo-facebook-inverted.svg" alt="" style="background-color: #3B5998">
+                </div>
+                <div class="card-block">
+
+                    <p class="card-text">{{{htmlText}}}</p>
+                    <hr>
+                    <a href="{{postUrl}}" class="card-link">Like</a>
+                    <a href="{{postUrl}}" class="card-link">Comment</a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{postUrl}}" class="card-link">Share</a>
+                </div>
+            </div>
+            {{/articles}}
+        </div></script></head><body><div class="container pt-3"><h3>Facebook Feeds</h3><hr><div class="col-md-8 offset-md-2" id="articleWrapper"></div></div></body></html>
